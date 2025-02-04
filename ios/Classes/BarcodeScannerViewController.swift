@@ -140,6 +140,15 @@ class BarcodeScannerViewController: UIViewController {
   
   private func startScan() {
     do {
+      scanner!.didStartScanningBlock = { [weak self] in
+        guard let self = self else {
+          return
+        }
+        if let overlay = self.scanRect {
+          let windowRect = overlay.calculateScanRect()
+          self.scanner!.scanRect = windowRect
+        }
+      }
       try scanner!.startScanning(with: cameraFromConfig, resultBlock: { codes in
         if let code = codes?.first {
           let codeType = self.formatMap.first(where: { $0.value == code.type });
